@@ -1,6 +1,7 @@
 class UserFlowsController < ApplicationController
   before_action :authenticate_user!
   before_action :enforce_policy
+  before_action :associate_default_flows, only: [:index, :show, :edit]
   respond_to :json
 
   def index
@@ -33,6 +34,17 @@ class UserFlowsController < ApplicationController
   end
 
   private
+
+  def associate_default_flows
+    existing_flow_ids = current_user.flows.map(&:id)
+
+    Flow.defaults.each do |default_flow|
+      unless existing_flow_ids.include?(default_flow.id)
+        current_user.flows << default_flow
+      end
+    end
+  end
+
   def flow_params
     params.require(:user_flow).permit(:title)
   end

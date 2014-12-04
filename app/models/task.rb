@@ -30,6 +30,7 @@ class Task < ActiveRecord::Base
 
 
   def self.assigned_to(*users)
+    binding.pry
     if users.empty?
       Task.none
     else
